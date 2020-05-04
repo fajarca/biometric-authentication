@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
+import io.fajarca.project.biometricauthentication.helper.AuthenticationError
+import io.fajarca.project.biometricauthentication.helper.navigateTo
 import io.fajarca.project.biometricauthentication.helper.toast
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -48,16 +50,15 @@ class MainActivity : AppCompatActivity() {
     private val biometricCallback = object : BiometricPrompt.AuthenticationCallback() {
         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
             super.onAuthenticationSucceeded(result)
-            toast("Authentication success")
+            navigateTo<HomeActivity>()
         }
 
-        override fun onAuthenticationFailed() {
-            super.onAuthenticationFailed()
-            toast("failed")
-        }
         override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
             super.onAuthenticationError(errorCode, errString)
-            tvErrorNotice.text = errString
+
+            if (errorCode != AuthenticationError.AUTHENTICATION_DIALOG_DISMISSED.errorCode && errorCode != AuthenticationError.CANCELLED.errorCode) {
+                tvErrorNotice.text = errString
+            }
         }
     }
 }
