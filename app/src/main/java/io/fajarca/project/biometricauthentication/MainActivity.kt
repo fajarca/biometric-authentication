@@ -50,6 +50,15 @@ class MainActivity : AppCompatActivity() {
             super.onAuthenticationSucceeded(result)
             toast("Authentication success")
         }
+
+        override fun onAuthenticationFailed() {
+            super.onAuthenticationFailed()
+            toast("failed")
+        }
+        override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+            super.onAuthenticationError(errorCode, errString)
+            tvErrorNotice.text = errString
+        }
     }
 }
 
