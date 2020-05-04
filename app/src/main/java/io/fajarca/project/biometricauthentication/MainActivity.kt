@@ -7,18 +7,19 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import io.fajarca.project.biometricauthentication.helper.AuthenticationError
 import io.fajarca.project.biometricauthentication.helper.navigateTo
-import io.fajarca.project.biometricauthentication.helper.toast
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var biometricPrompt : BiometricPrompt
+    private lateinit var biometricManager: BiometricManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setupBiometricAuthentication()
+        checkBiometricFeatureState()
 
         ivAuthenticate.setOnClickListener {
             if (isBiometricFeatureAvailable()) {
@@ -29,8 +30,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBiometricAuthentication() {
+        biometricManager = BiometricManager.from(this)
         val executor = ContextCompat.getMainExecutor(this)
         biometricPrompt = BiometricPrompt(this, executor, biometricCallback)
+    }
+
+
+    private fun checkBiometricFeatureState() {
+        when (biometricManager.canAuthenticate()) {
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> setErrorNotice("Sorry. It seems your device has no biometric hardware")
+            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> setErrorNotice("Biometric features are currently unavailable.")
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> setErrorNotice("You have not registered any biometric credentials")
+            BiometricManager.BIOMETRIC_SUCCESS -> {}
+        }
     }
 
     private fun buildBiometricPrompt(): BiometricPrompt.PromptInfo {
@@ -43,7 +55,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isBiometricFeatureAvailable(): Boolean {
-        val biometricManager = BiometricManager.from(this)
         return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
     }
 
@@ -57,9 +68,13 @@ class MainActivity : AppCompatActivity() {
             super.onAuthenticationError(errorCode, errString)
 
             if (errorCode != AuthenticationError.AUTHENTICATION_DIALOG_DISMISSED.errorCode && errorCode != AuthenticationError.CANCELLED.errorCode) {
-                tvErrorNotice.text = errString
+                setErrorNotice(errString.toString())
             }
         }
+    }
+
+    private fun setErrorNotice(errorMessage: String) {
+        tvErrorNotice.text = errorMessage
     }
 }
 
