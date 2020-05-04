@@ -4,7 +4,7 @@ On this simple project I explored how biometric authentication is implemented on
 
 Biometric authentication is one of the available method to protect sensitive information within our app. The biometric authentication helps us to utilize fingerprint recognition and face recognition sensor on the device.
 
-![alt text](https://ibb.co/d43L7Wr)
+<img src="screenshot/authentication_dialog.png" width="300"/>
 
 # Integration
 
